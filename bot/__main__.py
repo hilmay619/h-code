@@ -51,14 +51,14 @@ def stats(update, context):
 			f'<b>📊 Data Usage 📊</b>\n\n'\
             f'<b>💨 Total Disk Space : {total}</b>\n'\
             f'<b>📈 Used : {used}</b> | <b> 📉 Free : {free}</b>\n'\
-            f'<b>🔺 Upload: {sent}</b>\n'\
-            f'<b>🔻 Download: {recv}</b>\n\n'\
+            f'<b>🔺 Upload : {sent}</b>\n'\
+            f'<b>🔻 Download : {recv}</b>\n\n'\
 			f'<b>📊 Performance Meter 📊</b>\n\n'\
-            f'<b>🖥 CPU: {cpuUsage}%</b>\n'\
-            f'<b>⚙️ RAM: {mem_p}%</b>\n'\
-            f'<b>🪅 DISK: {disk}%</b>\n'\
-            f'<b>🎙 Physical Cores: {p_core}</b>\n'\
-            f'<b>🎙 Total Cores: {t_core}</b>\n'\
+            f'<b>🖥 CPU : {cpuUsage}%</b>\n'\
+            f'<b>⚙️ RAM : {mem_p}%</b>\n'\
+            f'<b>🪅 DISK : {disk}%</b>\n'\
+            f'<b>🎙 Physical Cores : {p_core}</b>\n'\
+            f'<b>🎙 Total Cores : {t_core}</b>\n'\
             f'<b>🧬 Swap : {swap_t}</b> | <b>Used : {swap_p}%</b>\n'\
             f'<b>⚙️ Memory Total : {mem_t}</b>\n'\
             f'<b>⚙️ Memory Free : {mem_a}</b>\n'\
