@@ -172,7 +172,7 @@ help_string_telegraph = f'''<br>
 '''
 
 help = telegraph.create_page(
-        title='Mirror-Leech-Bot Help',
+        title='QXYZDrive',
         content=help_string_telegraph,
     )["path"]
 
@@ -232,7 +232,7 @@ def main():
     if ospath.isfile(".restartmsg"):
         with open(".restartmsg") as f:
             chat_id, msg_id = map(int, f)
-        bot.edit_message_text("✅ <b>Restarted Successfully!</b> ✅", chat_id, msg_id)
+        bot.edit_message_text("✅ Restarted Successfully! ✅", chat_id, msg_id)
         osremove(".restartmsg")
 
     start_handler = CommandHandler(BotCommands.StartCommand, start, run_async=True)
