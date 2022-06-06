@@ -182,10 +182,10 @@ def get_readable_message():
                     upspeed_bytes += float(spd.split('M')[0]) * 1048576
         bmsg += f"\n\n<b>⚡️ Internet Speed Meter ⚡️</b>\n\n<b>🔻 D : {get_readable_file_size(dlspeed_bytes)}/s</b> | <b>🔺 U : {get_readable_file_size(upspeed_bytes)}/s</b>"
         if STATUS_LIMIT is not None and tasks > STATUS_LIMIT:
-            msg += f"<b>Page:</b> {PAGE_NO}/{pages} | <b>Tasks:</b> {tasks}\n"
+            msg += f"<b>Page : {PAGE_NO}/{pages}</b> | <b>Tasks : {tasks}</b>\n"
             buttons = ButtonMaker()
-            buttons.sbutton("Previous", "status pre")
-            buttons.sbutton("Next", "status nex")
+            buttons.sbutton("<b>↩️ Previous ↩️</b>", "status pre")
+            buttons.sbutton("<b>↪️ Next ↪️</b>", "status nex")
             button = InlineKeyboardMarkup(buttons.build_menu(2))
             return msg + bmsg, button
         return msg + bmsg, ""
