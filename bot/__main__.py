@@ -58,7 +58,7 @@ def stats(update, context):
             f'<b>🗃 DISK : {disk}%</b>\n'\
             f'<b>🪅 Physical Cores : {p_core}</b>\n'\
             f'<b>🎛 Total Cores : {t_core}</b>\n'\
-            f'<b>🧬 Swap : {swap_t}</b> | 🔬 Used : {swap_p}%</b>\n'\
+            f'<b>🧬 Swap : {swap_t}</b> | <b>🔬 Used : {swap_p}%</b>\n'\
             f'<b>⚙️ Memory Total : {mem_t}</b>\n'\
             f'<b>⚙️ Memory Free : {mem_a}</b>\n'\
             f'<b>⚙️ Memory Used : {mem_u}</b>\n'
@@ -232,7 +232,7 @@ def main():
     if ospath.isfile(".restartmsg"):
         with open(".restartmsg") as f:
             chat_id, msg_id = map(int, f)
-        bot.edit_message_text("✅ Restarted Successfully! ✅", chat_id, msg_id)
+        bot.edit_message_text("✅ <b>Restarted Successfully!</b> ✅", chat_id, msg_id)
         osremove(".restartmsg")
 
     start_handler = CommandHandler(BotCommands.StartCommand, start, run_async=True)
