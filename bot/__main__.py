@@ -55,10 +55,10 @@ def stats(update, context):
 			f'<b>📊 Performance Meter 📊</b>\n\n'\
             f'<b>🖥 CPU : {cpuUsage}%</b>\n'\
             f'<b>⚙️ RAM : {mem_p}%</b>\n'\
-            f'<b>🪅 DISK : {disk}%</b>\n'\
+            f'<b>🗃 DISK : {disk}%</b>\n'\
             f'<b>🪅 Physical Cores : {p_core}</b>\n'\
-            f'<b>🔬 Total Cores : {t_core}</b>\n'\
-            f'<b>🧬 Swap : {swap_t}</b> | <b>Used : {swap_p}%</b>\n'\
+            f'<b>🎛 Total Cores : {t_core}</b>\n'\
+            f'<b>🧬 Swap : {swap_t}</b> | <b>💡 Used : {swap_p}%</b>\n'\
             f'<b>⚙️ Memory Total : {mem_t}</b>\n'\
             f'<b>⚙️ Memory Free : {mem_a}</b>\n'\
             f'<b>⚙️ Memory Used : {mem_u}</b>\n'
