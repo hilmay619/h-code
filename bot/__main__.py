@@ -49,16 +49,15 @@ def stats(update, context):
             f'<b>⏰ Uptime : {currentTime}</b>\n'\
             f'<b>🖥 OS Uptime : {osUptime}</b>\n\n'\
 			f'<b>📊 Data Usage 📊</b>\n\n'\
-            f'<b>💨 Total Disk Space : {total}</b>\n'\
-            f'<b>📈 Used : {used}</b> | <b> 📉 Free : {free}</b>\n'\
-            f'<b>🔺 Upload : {sent}</b>\n'\
-            f'<b>🔻 Download : {recv}</b>\n\n'\
+            f'<b>💨 Storage : {total}</b>\n'\
+            f'<b>📈 Used : {used}</b>\n<b> 📉 Free : {free}</b>\n'\
+            f'<b>🔺 Upload : {sent}</b>\n<b>🔻 Download : {recv}</b>\n\n'\
 			f'<b>📊 Performance Meter 📊</b>\n\n'\
             f'<b>🖥 CPU : {cpuUsage}%</b>\n'\
             f'<b>⚙️ RAM : {mem_p}%</b>\n'\
             f'<b>🪅 DISK : {disk}%</b>\n'\
-            f'<b>🎙 Physical Cores : {p_core}</b>\n'\
-            f'<b>🎙 Total Cores : {t_core}</b>\n'\
+            f'<b>🪅 Physical Cores : {p_core}</b>\n'\
+            f'<b>🔬 Total Cores : {t_core}</b>\n'\
             f'<b>🧬 Swap : {swap_t}</b> | <b>Used : {swap_p}%</b>\n'\
             f'<b>⚙️ Memory Total : {mem_t}</b>\n'\
             f'<b>⚙️ Memory Free : {mem_a}</b>\n'\
@@ -68,7 +67,7 @@ def stats(update, context):
 
 def start(update, context):
     buttons = ButtonMaker()
-    buttons.buildbutton("My Master", "https://t.me/hilmay619")
+    buttons.buildbutton("😎 My Master 😎", "https://t.me/hilmay619")
     reply_markup = InlineKeyboardMarkup(buttons.build_menu(2))
     if CustomFilters.authorized_user(update) or CustomFilters.authorized_chat(update):
         start_string = f'''
@@ -77,10 +76,10 @@ Type /{BotCommands.HelpCommand} to get a list of available commands
 '''
         sendMarkup(start_string, context.bot, update.message, reply_markup)
     else:
-        sendMarkup('Not Authorized user, deploy your own mirror-leech bot', context.bot, update.message, reply_markup)
+        sendMarkup('<b>🚫 Oops! You Are Not Authorized User 🚫</b>', context.bot, update.message, reply_markup)
 
 def restart(update, context):
-    restart_message = sendMessage("Restarting...", context.bot, update.message)
+    restart_message = sendMessage("<b>🔄 Restarting, Please Wait! 🔄</b>", context.bot, update.message)
     if Interval:
         Interval[0].cancel()
     alive.kill()
@@ -97,7 +96,7 @@ def ping(update, context):
     start_time = int(round(time() * 1000))
     reply = sendMessage("Starting Ping", context.bot, update.message)
     end_time = int(round(time() * 1000))
-    editMessage(f'{end_time - start_time} ms', reply)
+    editMessage(f'🖥 Server {end_time - start_time} MilliSecond 🖥', reply)
 
 
 def log(update, context):
