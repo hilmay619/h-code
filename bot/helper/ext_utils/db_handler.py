@@ -115,7 +115,7 @@ class DbManger:
         self.cur.execute(sql)
         self.conn.commit()
         self.disconnect()
-        return '✅ <b>Successfully Promoted as Sudo Permission</b> ✅'
+        return '✅ <b>Successfully Promoted as Sudo</b> ✅'
 
     def user_rmsudo(self, user_id: int):
         if self.err:
@@ -125,7 +125,7 @@ class DbManger:
             self.cur.execute(sql)
             self.conn.commit()
             self.disconnect()
-            return '✅ <b>Successfully Removed From Sudo Permission</b> ✅'
+            return '✅ <b>Successfully Removed From Sudo</b> ✅'
 
     def user_media(self, user_id: int):
         if self.err:

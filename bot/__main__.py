@@ -172,7 +172,7 @@ help_string_telegraph = f'''<br>
 '''
 
 help = telegraph.create_page(
-        title='QXYZDrive',
+        title='Mirror-Leech-Telegram-Bot',
         content=help_string_telegraph,
     )["path"]
 
