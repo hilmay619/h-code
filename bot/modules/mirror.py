@@ -199,7 +199,7 @@ class MirrorListener:
         if self.isLeech:
             msg += f'\n<b>📄 Total Files : {folders}</b>'
             if typ != 0:
-                msg += f'\n<b>🔎 Type Files : {typ}</b>\n<b>✅ Status :- Successfully Uploaded</b>'
+                msg += f'\n<b>🔎 Type Files : {typ}</b>'
             msg += f'\n\n<b>🙎🏻‍♂️ By : {self.tag}✨</b>\n\n'
             if not files:
                 sendMessage(msg, self.bot, self.message)
@@ -217,7 +217,7 @@ class MirrorListener:
             msg += f'\n<b>🔎 Type Files : {typ}</b>'
             if ospath.isdir(f'{DOWNLOAD_DIR}{self.uid}/{name}'):
                 msg += f'\n<b>🗂 Sub Folders : {folders}</b>'
-                msg += f'\n<b>📄 Total Files : {files}</b>\n<b>✅ Status :- Successfully Uploaded</b>'
+                msg += f'\n<b>📄 Total Files : {files}</b>'
             msg += f'\n\n<b>🙎🏻‍♂️ By : {self.tag}✨</b>'
             buttons = ButtonMaker()
             link = short_url(link)
