@@ -197,12 +197,10 @@ class MirrorListener:
             DbManger().rm_complete_task(self.message.link)
         msg = f"<b>📂 File Name :</b> <code>{escape(name)}</code>\n<b>📥 Total Size : {size}</b>"
         if self.isLeech:
-            msg += f'\n<b>📄 Total Files : {folders}</b>'
+            msg += f'\n<b>📄 Total File : {folders}</b>'
             if typ != 0:
-                msg += f'\n<b>🔎 Type File : File — 📄</b>'
-                msg += f'\n<b>📦 Category : {typ}</b>'
-                msg += f'\n<b>✅ Status :- Successfully Uploaded</b>'
-            msg += f'\n<b>🙎🏻‍♂️ By : {self.tag}✨</b>\n\n'
+                msg += f'\n<b>🔎 Type Files : File — 📄</b>\n<b>📦 Category : {typ}</b>\n<b>✅ Status :- Successfully Uploaded</b>'
+            msg += f'\n\n<b>🙎🏻‍♂️ By : {self.tag}</b>\n\n'
             if not files:
                 sendMessage(msg, self.bot, self.message)
             else:
@@ -216,11 +214,11 @@ class MirrorListener:
                 if fmsg != '':
                     sendMessage(msg + fmsg, self.bot, self.message)
         else:
-            msg += f'\n<b>🔎 Type File : {typ} — 📁</b>'
+            msg += f'\n<b>🔎 Type Files : File — 📄</b>\n<b>📦 Category : {typ}</b>\n<b>✅ Status :- Successfully Uploaded</b>'
             if ospath.isdir(f'{DOWNLOAD_DIR}{self.uid}/{name}'):
                 msg += f'\n<b>🗂 Sub Folders : {folders}</b>'
                 msg += f'\n<b>📄 Total Files : {files}</b>'
-            msg += f'\n<b>🙎🏻‍♂️ By : {self.tag}✨</b>'
+            msg += f'\n\n<b>🙎🏻‍♂️ By : {self.tag}</b>'
             buttons = ButtonMaker()
             link = short_url(link)
             buttons.buildbutton("⚡ Google Drive ⚡", link)
