@@ -22,7 +22,7 @@ from .modules import authorize, list, cancel_mirror, mirror_status, mirror, clon
 
 def stats(update, context):
     if ospath.exists('.git'):
-        last_commit = check_output(["git log -1 --date=short --pretty=format:'%cd'"], shell=True).decode()
+        last_commit = check_output(["git log -1 --date=rfc --pretty=format:'%cd'"], shell=True).decode()
     else:
         last_commit = 'No UPSTREAM_REPO'
     currentTime = get_readable_time(time() - botStartTime)
@@ -44,24 +44,24 @@ def stats(update, context):
     mem_t = get_readable_file_size(memory.total)
     mem_a = get_readable_file_size(memory.available)
     mem_u = get_readable_file_size(memory.used)
-    stats = f'<b>⏲ Time Calculation ⏲</b>\n\n'\
-			f'<b>📅 Created : {last_commit}</b>\n'\
+    stats = f'<b>📊 Time Calculation 📊</b>\n\n'\
+			f'<b>📅 Date : {last_commit}</b>\n'\
             f'<b>⏰ Uptime : {currentTime}</b>\n'\
-            f'<b>🖥 OS Uptime : {osUptime}</b>\n\n'\
+            f'<b>🖥 System Uptime : {osUptime}</b>\n\n'\
 			f'<b>📊 Data Usage 📊</b>\n\n'\
             f'<b>💨 Storage : {total}</b>\n'\
             f'<b>📈 Used : {used}</b>\n<b>📉 Free : {free}</b>\n'\
-            f'<b>🔺 Upload : {sent}</b>\n<b>🔻 Download : {recv}</b>\n\n'\
+            f'<b>📤 Upload : {sent}</b>\n<b>📥 Download : {recv}</b>\n\n'\
 			f'<b>📊 Performance Meter 📊</b>\n\n'\
             f'<b>🖥 CPU : {cpuUsage}%</b>\n'\
             f'<b>⚙️ RAM : {mem_p}%</b>\n'\
             f'<b>🗃 DISK : {disk}%</b>\n'\
             f'<b>🪅 Physical Cores : {p_core}</b>\n'\
             f'<b>🎛 Total Cores : {t_core}</b>\n'\
-            f'<b>🧬 Swap : {swap_t}</b> | <b>🔬 Used : {swap_p}%</b>\n'\
-            f'<b>⚙️ Memory Total : {mem_t}</b>\n'\
-            f'<b>⚙️ Memory Free : {mem_a}</b>\n'\
-            f'<b>⚙️ Memory Used : {mem_u}</b>\n'
+            f'<b>🛡 Swap Memory : {swap_t}</b> | <b>⏳ Swap Used : {swap_p}%</b>\n'\
+            f'<b>💽 Memory Total : {mem_t}</b>\n'\
+            f'<b>📉 Memory Free : {mem_a}</b>\n'\
+            f'<b>📈 Memory Used : {mem_u}</b>\n'
     sendMessage(stats, context.bot, update.message)
 
 
