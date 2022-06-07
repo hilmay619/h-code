@@ -77,7 +77,7 @@ def cancel_all_update(update, context):
         query.message.delete()
         cancel_all(data[1])
     else:
-        query.answer(text="😡 You Don't Have Permission 😡", show_alert=True)
+        query.answer(text="😡 You Don't Have Permission, Because You're Not Authorized User & Sudo 😡", show_alert=True)
 
 
 
