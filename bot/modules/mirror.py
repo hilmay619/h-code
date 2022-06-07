@@ -199,8 +199,8 @@ class MirrorListener:
         if self.isLeech:
             msg += f'\n<b>📄 Total Files : {folders}</b>'
             if typ != 0:
-                msg += f'\n<b>🔎 Type Files : {typ}</b>'
-            msg += f'\n<b>✅ Status :- Successfully Uploaded</b>\n\n<b>🙎🏻‍♂️ By : {self.tag}✨</b>\n\n'
+                msg += f'\n<b>🔎 Type Files : {typ}</b>\n<b>✅ Status :- Successfully Uploaded</b>'
+            msg += f'\n\n<b>🙎🏻‍♂️ By : {self.tag}✨</b>\n\n'
             if not files:
                 sendMessage(msg, self.bot, self.message)
             else:
