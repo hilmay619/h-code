@@ -197,7 +197,7 @@ class MirrorListener:
             DbManger().rm_complete_task(self.message.link)
         msg = f"<b>📂 File Name :</b> <code>{escape(name)}</code>\n<b>📥 Total Size : {size}</b>"
         if self.isLeech:
-            msg += f'\n<b>📄 Total File : {folders}</b>'
+            msg += f'\n<b>📄 Total Files : {folders}</b>'
             if typ != 0:
                 msg += f'\n<b>🔎 Type Files : File — 📄</b>\n<b>📦 Category : {typ}</b>\n<b>✅ Status :- Successfully Uploaded</b>'
             msg += f'\n\n<b>🙎🏻‍♂️ By : {self.tag}</b>\n\n'
