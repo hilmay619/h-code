@@ -53,12 +53,12 @@ def _clone(message, bot, multi=0):
             LOGGER.info('Checking File/Folder if already in Drive...')
             smsg, button = gd.drive_list(name, True, True)
             if smsg:
-                msg3 = "File/Folder is already available in Drive.\nHere are the search results:"
+                msg3 = "🔎 File/Folder is Already Available in Drive. ✅\n\n🔐 Here : ⤵️"
                 return sendMarkup(msg3, bot, message, button)
         if CLONE_LIMIT is not None:
             LOGGER.info('Checking File/Folder Size...')
             if size > CLONE_LIMIT * 1024**3:
-                msg2 = f'Failed, Clone limit is {CLONE_LIMIT}GB.\nYour File/Folder size is {get_readable_file_size(size)}.'
+                msg2 = f'🚫 Failed 🚫 - Clone Limit {CLONE_LIMIT}GB.\n📄 Your File/Folder Size : {get_readable_file_size(size)}.'
                 return sendMessage(msg2, bot, message)
         if multi > 1:
             sleep(4)
@@ -101,7 +101,7 @@ def _clone(message, bot, multi=0):
         if is_gdtot:
             gd.deletefile(link)
     else:
-        sendMessage('Send Gdrive or gdtot link along with command or by replying to the link by command', bot, message)
+        sendMessage('🚫 <b>Send Me Google Drive Shareable Link or GDTOT Link </b> 🚫', bot, message)
 
 @new_thread
 def cloneNode(update, context):
