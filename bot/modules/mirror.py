@@ -214,10 +214,10 @@ class MirrorListener:
                 if fmsg != '':
                     sendMessage(msg + fmsg, self.bot, self.message)
         else:
-            msg += f'\n<b>🔎 Type Files : File — 📄</b>\n<b>📦 Category : {typ}</b>\n<b>✅ Status :- Successfully Uploaded</b>'
+            msg += f'\n<b>🔎 Type Files : {typ} — 📁</b>'
             if ospath.isdir(f'{DOWNLOAD_DIR}{self.uid}/{name}'):
                 msg += f'\n<b>🗂 Sub Folders : {folders}</b>'
-                msg += f'\n<b>📄 Total Files : {files}</b>'
+                msg += f'\n<b>📄 Total Files : {files}</b>\n<b>✅ Status : Successfully Uploaded</b>'
             msg += f'\n\n<b>🙎🏻‍♂️ By : {self.tag}</b>'
             buttons = ButtonMaker()
             link = short_url(link)
