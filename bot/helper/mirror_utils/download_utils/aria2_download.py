@@ -37,9 +37,9 @@ def __onDownloadStarted(api, gid):
                 if sname is not None:
                     smsg, button = GoogleDriveHelper().drive_list(sname, True)
                     if smsg:
-                        dl.getListener().onDownloadError('File/Folder already available in Drive.\n\n')
+                        dl.getListener().onDownloadError('✅ <b>File/Folder Already Available in Drive</b> ✅\n\n')
                         api.remove([download], force=True, files=True)
-                        return sendMarkup("Here are the search results:", dl.getListener().bot, dl.getListener().message, button)
+                        return sendMarkup("Here ⤵️", dl.getListener().bot, dl.getListener().message, button)
             if any([ZIP_UNZIP_LIMIT, TORRENT_DIRECT_LIMIT, STORAGE_THRESHOLD]):
                 sleep(1)
                 limit = None
@@ -83,7 +83,7 @@ def __onDownloadStopped(api, gid):
     sleep(6)
     dl = getDownloadByGid(gid)
     if dl:
-        dl.getListener().onDownloadError('Dead torrent!')
+        dl.getListener().onDownloadError('☠️ <b>Dead Torrent</b> ☠️')
 
 @new_thread
 def __onDownloadError(api, gid):
