@@ -67,7 +67,7 @@ def stats(update, context):
 
 def start(update, context):
     buttons = ButtonMaker()
-    buttons.buildbutton("😎 My Master 😎", "https://t.me/hilmay619")
+    buttons.buildbutton("😎 My Master 😎", "https://t.me/KurangKopiGes")
     reply_markup = InlineKeyboardMarkup(buttons.build_menu(2))
     if CustomFilters.authorized_user(update) or CustomFilters.authorized_chat(update):
         start_string = f'''
@@ -76,7 +76,7 @@ Type /{BotCommands.HelpCommand} to get a list of available commands
 '''
         sendMarkup(start_string, context.bot, update.message, reply_markup)
     else:
-        sendMarkup('<b>🚫 Oops! You Are Not Authorized User 🚫</b>', context.bot, update.message, reply_markup)
+        sendMarkup('<b>⚠️ Ups! Anda Bukan Pengguna Resmi ⚠️</b>', context.bot, update.message, reply_markup)
 
 def restart(update, context):
     restart_message = sendMessage("<b>🔄 Restarting, Please Wait! 🔄</b>", context.bot, update.message)
@@ -172,7 +172,7 @@ help_string_telegraph = f'''<br>
 '''
 
 help = telegraph.create_page(
-        title='Mirror-Leech-Telegram-Bot',
+        title='Kang [M•R•T]',
         content=help_string_telegraph,
     )["path"]
 
