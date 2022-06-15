@@ -76,7 +76,7 @@ Type /{BotCommands.HelpCommand} to get a list of available commands
 '''
         sendMarkup(start_string, context.bot, update.message, reply_markup)
     else:
-        sendMarkup('<b>⚠️ Ups! Anda Bukan Pengguna Resmi ⚠️</b>', context.bot, update.message, reply_markup)
+        sendMarkup('<b>😅 Jancuk i koe arep nyapo to 😅️</b>', context.bot, update.message, reply_markup)
 
 def restart(update, context):
     restart_message = sendMessage("<b>🔄 Restarting, Please Wait! 🔄</b>", context.bot, update.message)
