@@ -3,7 +3,7 @@ from bot import CMD_INDEX
 
 class _BotCommands:
     def __init__(self):
-        self.StartCommand = f'start{CMD_INDEX}'
+        self.StartCommand = f'start'
         self.MirrorCommand = f'mirror{CMD_INDEX}'
         self.UnzipMirrorCommand = f'unzipmirror{CMD_INDEX}'
         self.ZipMirrorCommand = f'zipmirror{CMD_INDEX}'
@@ -20,7 +20,7 @@ class _BotCommands:
         self.PingCommand = f'ping{CMD_INDEX}'
         self.RestartCommand = f'restart{CMD_INDEX}'
         self.StatsCommand = f'stats{CMD_INDEX}'
-        self.HelpCommand = f'help{CMD_INDEX}'
+        self.HelpCommand = f'help'
         self.LogCommand = f'log{CMD_INDEX}'
         self.CloneCommand = f'clone{CMD_INDEX}'
         self.CountCommand = f'count{CMD_INDEX}'
