@@ -216,7 +216,7 @@ class MirrorListener:
         else:
             msg += f'\n<b>🔎 Type Files : {typ}</b>'
             if ospath.isdir(f'{DOWNLOAD_DIR}{self.uid}/{name}'):
-                msg += f'\n<b>🗂 Sub Folders : {folders}</b>'
+                msg += f'\n<b>🗂 Total Folders : {folders}</b>'
                 msg += f'\n<b>📄 Total Files : {files}</b>'
             msg += f'\n\n<b>🙎🏻‍♂️ By : {self.tag}✨</b>'
             buttons = ButtonMaker()
@@ -229,10 +229,10 @@ class MirrorListener:
                 if ospath.isdir(f'{DOWNLOAD_DIR}/{self.uid}/{name}'):
                     share_url += '/'
                     share_url = short_url(share_url)
-                    buttons.buildbutton("💨 Drive Index 💨", share_url)
+                    buttons.buildbutton("💨 Drive IndeX 💨", share_url)
                 else:
                     share_url = short_url(share_url)
-                    buttons.buildbutton("💨 Drive Index 💨", share_url)
+                    buttons.buildbutton("💨 Drive IndeX 💨", share_url)
                     if VIEW_LINK:
                         share_urls = f'{INDEX_URL}/{url_path}?a=view'
                         share_urls = short_url(share_urls)
