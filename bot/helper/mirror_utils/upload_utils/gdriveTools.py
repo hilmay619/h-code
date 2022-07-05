@@ -119,7 +119,7 @@ class GoogleDriveHelper:
         msg = ''
         try:
             self.__service.files().delete(fileId=file_id, supportsTeamDrives=IS_TEAM_DRIVE).execute()
-            msg = "Successfully deleted"
+            msg = "<b>✅ Successfully Deleted ✅</b>"
             LOGGER.info(f"Delete Result: {msg}")
         except HttpError as err:
             if "File not found" in str(err):
@@ -365,7 +365,7 @@ class GoogleDriveHelper:
                     url_path = rquote(f'{meta.get("name")}', safe='')
                     url = f'{INDEX_URL}/{url_path}/'
                     url = short_url(url)
-                    buttons.buildbutton("💨 Drive Index 💨", url)
+                    buttons.buildbutton("💨 Drive IndeX 💨", url)
             else:
                 file = self.__copyFile(meta.get('id'), parent_id)
                 msg += f'<b>📂 File Name :</b> <code>{file.get("name")}</code>'
@@ -381,7 +381,7 @@ class GoogleDriveHelper:
                     url_path = rquote(f'{file.get("name")}', safe='')
                     url = f'{INDEX_URL}/{url_path}'
                     url = short_url(url)
-                    buttons.buildbutton("💨 Drive Index 💨", url)
+                    buttons.buildbutton("💨 Drive IndeX 💨", url)
                     if VIEW_LINK:
                         urls = f'{INDEX_URL}/{url_path}?a=view'
                         urls = short_url(urls)
@@ -643,7 +643,7 @@ class GoogleDriveHelper:
                     # Excluded index link as indexes cant download or open these shortcuts
                 else:
                     furl = f"https://drive.google.com/uc?id={file.get('id')}&export=download"
-                    msg += f"📄 File Name : <code>{file.get('name')}</code><br>📥 Total Size :({get_readable_file_size(int(file.get('size', 0)))})<br>⚙️ Type Files : File - 📄<br>🔗 Link :-"
+                    msg += f"📄 File Name : <code>{file.get('name')}</code><br>📥 Total Size : {get_readable_file_size(int(file.get('size', 0)))}<br>⚙️ Type Files : File - 📄<br>🔗 Link :-"
                     furl = short_url(furl)
                     msg += f"<b><a href={furl}>⚡️ Google Drive ⚡️</a></b>"
                     if INDEX_URLS[index] is not None:
