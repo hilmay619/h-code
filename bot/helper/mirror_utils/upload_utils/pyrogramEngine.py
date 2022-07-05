@@ -1,20 +1,22 @@
-from logging import getLogger, WARNING
+from logging import getLogger, ERROR
 from os import remove as osremove, walk, path as ospath, rename as osrename
 from time import time, sleep
 from pyrogram.errors import FloodWait, RPCError
 from PIL import Image
 from threading import RLock
+from pyrogram import Client, enums
 
-from bot import DOWNLOAD_DIR, AS_DOCUMENT, AS_DOC_USERS, AS_MEDIA_USERS, CUSTOM_FILENAME, EXTENSION_FILTER, app
-from bot.helper.ext_utils.fs_utils import take_ss, get_media_info, get_path_size
+from bot import DOWNLOAD_DIR, AS_DOCUMENT, AS_DOC_USERS, AS_MEDIA_USERS, CUSTOM_FILENAME, \
+                 EXTENTION_FILTER, app
+from bot.helper.ext_utils.fs_utils import take_ss, get_media_info, get_video_resolution, get_path_size
 from bot.helper.ext_utils.bot_utils import get_readable_file_size
 
 LOGGER = getLogger(__name__)
-getLogger("pyrogram").setLevel(WARNING)
+getLogger("pyrogram").setLevel(ERROR)
 
 VIDEO_SUFFIXES = ("MKV", "MP4", "MOV", "WMV", "3GP", "MPG", "WEBM", "AVI", "FLV", "M4V", "GIF")
 AUDIO_SUFFIXES = ("MP3", "M4A", "M4B", "FLAC", "WAV", "AIF", "OGG", "AAC", "DTS", "MID", "AMR", "MKA")
-IMAGE_SUFFIXES = ("JPG", "JPX", "PNG", "CR2", "TIF", "BMP", "JXR", "PSD", "ICO", "HEIC", "JPEG")
+IMAGE_SUFFIXES = ("JPG", "JPX", "PNG", "WEBP", "CR2", "TIF", "BMP", "JXR", "PSD", "ICO", "HEIC", "JPEG")
 
 
 class TgUploader:
@@ -29,6 +31,7 @@ class TgUploader:
         self.__is_cancelled = False
         self.__as_doc = AS_DOCUMENT
         self.__thumb = f"Thumbnails/{listener.message.from_user.id}.jpg"
+        self.__sent_msg = None
         self.__msgs_dict = {}
         self.__corrupted = 0
         self.__resource_lock = RLock()
@@ -41,7 +44,7 @@ class TgUploader:
         size = get_readable_file_size(get_path_size(path))
         for dirpath, subdir, files in sorted(walk(path)):
             for file_ in sorted(files):
-                if not file_.lower().endswith(tuple(EXTENSION_FILTER)):
+                if not file_.lower().endswith(tuple(EXTENTION_FILTER)):
                     self.__total_files += 1
                     up_path = ospath.join(dirpath, file_)
                     if ospath.getsize(up_path) == 0:
@@ -84,11 +87,10 @@ class TgUploader:
                                 osremove(thumb)
                             return
                     if thumb is not None:
-                        with Image.open(thumb) as img:
-                            width, height = img.size
+                        img = Image.open(thumb)
+                        width, height = img.size
                     else:
-                        width = 480
-                        height = 320
+                        width, height = get_video_resolution(up_path)
                     if not file_.upper().endswith(("MKV", "MP4")):
                         file_ = ospath.splitext(file_)[0] + '.mp4'
                         new_path = ospath.join(dirpath, file_)
