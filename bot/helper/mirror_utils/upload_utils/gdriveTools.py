@@ -643,7 +643,7 @@ class GoogleDriveHelper:
                     # Excluded index link as indexes cant download or open these shortcuts
                 else:
                     furl = f"https://drive.google.com/uc?id={file.get('id')}&export=download"
-                    msg += f"📄 File Name : <code>{file.get('name')}</code><br>📥 Total Size : {get_readable_file_size(int(file.get('size', 0)))}<br>⚙️ Type Files : File - 📄<br>🔗 Link :-"
+                    msg += f"📄 File Name : <code>{file.get('name')}</code><br>📥 Total Size : {get_readable_file_size(int(file.get('size', 0)))}<br>⚙️ Type Files : File - 📄<br>🔗 Link :-<br>"
                     furl = short_url(furl)
                     msg += f"<b><a href={furl}>⚡️ Google Drive ⚡️</a></b>"
                     if INDEX_URLS[index] is not None:
