@@ -101,7 +101,7 @@ def _clone(message, bot, multi=0):
         if is_gdtot:
             gd.deletefile(link)
     else:
-        sendMessage('🚫 <b>Send Me Google Drive Shareable Link or GDTOT Link </b> 🚫', bot, message)
+        sendMessage('🚫 <b>Send Me Google Drive Shareable Link </b> 🚫', bot, message)
 
 @new_thread
 def cloneNode(update, context):
