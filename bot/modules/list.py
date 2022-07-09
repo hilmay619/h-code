@@ -11,15 +11,15 @@ from bot.helper.telegram_helper import button_build
 
 def list_buttons(update, context):
     user_id = update.message.from_user.id
-    if len(update.message.text.split(" ", maxsplit=1)) < 2:
-        return sendMessage('Send a search key along with command', context.bot, update.message)
+    if len(context.args) == 0:
+        return sendMessage('🚫 <b>Send Me a Keyword to Search</b> 🚫', context.bot, update.message)
     buttons = button_build.ButtonMaker()
-    buttons.sbutton("Folders", f"types {user_id} folders")
-    buttons.sbutton("Files", f"types {user_id} files")
-    buttons.sbutton("Both", f"types {user_id} both")
-    buttons.sbutton("Cancel", f"types {user_id} cancel")
+    buttons.sbutton("📂 Folders 📂", f"types {user_id} folders")
+    buttons.sbutton("📄 Files 📄", f"types {user_id} files")
+    buttons.sbutton("↔️ Both ↔️", f"types {user_id} both")
+    buttons.sbutton("🚫 Cancel 🚫", f"types {user_id} cancel")
     button = InlineKeyboardMarkup(buttons.build_menu(2))
-    sendMarkup('Choose option to list.', context.bot, update.message, button)
+    sendMarkup('<b>🔖 Find File/Folder. Choose ⤵️</b>', context.bot, update.message, button)
 
 def select_type(update, context):
     query = update.callback_query
@@ -27,15 +27,15 @@ def select_type(update, context):
     msg = query.message
     key = msg.reply_to_message.text.split(" ", maxsplit=1)[1]
     data = query.data
-    data = data.split(" ")
+    data = data.split()
     if user_id != int(data[1]):
-        return query.answer(text="Not Yours!", show_alert=True)
+        return query.answer(text="🚫 You Can't Use This, Because it's Not Your Task 🚫", show_alert=True)
     elif data[2] == 'cancel':
         query.answer()
-        return editMessage("list has been canceled!", msg)
+        return editMessage("🚫 <b>Canceled</b> 🚫", msg)
     query.answer()
     item_type = data[2]
-    editMessage(f"<b>Searching for <i>{key}</i></b>", msg)
+    editMessage(f"<b>🔍 Searching For Keyword :</b> {key}", msg)
     Thread(target=_list_drive, args=(key, msg, item_type)).start()
 
 def _list_drive(key, bmsg, item_type):
@@ -45,7 +45,7 @@ def _list_drive(key, bmsg, item_type):
     if button:
         editMessage(msg, bmsg, button)
     else:
-        editMessage(f'No result found for <i>{key}</i>', bmsg)
+        editMessage(f'🚫 <b>No Result Found</b> 🚫', bmsg)
 
 list_handler = CommandHandler(BotCommands.ListCommand, list_buttons, filters=CustomFilters.authorized_chat | CustomFilters.authorized_user, run_async=True)
 list_type_handler = CallbackQueryHandler(select_type, pattern="types", run_async=True)

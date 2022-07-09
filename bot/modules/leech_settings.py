@@ -58,7 +58,7 @@ def setLeechType(update, context):
     message = query.message
     user_id = query.from_user.id
     data = query.data
-    data = data.split(" ")
+    data = data.split()
     if user_id != int(data[1]):
         query.answer(text="Not Yours!", show_alert=True)
     elif data[2] == "doc":
@@ -120,4 +120,3 @@ but_set_handler = CallbackQueryHandler(setLeechType, pattern="leechset", run_asy
 dispatcher.add_handler(leech_set_handler)
 dispatcher.add_handler(but_set_handler)
 dispatcher.add_handler(set_thumbnail_handler)
-

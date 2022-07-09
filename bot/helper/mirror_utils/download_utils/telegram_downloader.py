@@ -1,7 +1,6 @@
 from logging import getLogger, WARNING
 from time import time
 from threading import RLock, Lock
-from pyrogram import Client, enums
 
 from bot import LOGGER, download_dict, download_dict_lock, STOP_DUPLICATE, STORAGE_THRESHOLD, app
 from bot.helper.ext_utils.bot_utils import get_readable_file_size
@@ -78,7 +77,7 @@ class TelegramDownloadHelper:
         if download is not None:
             self.__onDownloadComplete()
         elif not self.__is_cancelled:
-            self.__onDownloadError('Internal error occurred')
+            self.__onDownloadError('Internal Error Occurred')
 
     def add_download(self, message, path, filename):
         _dmsg = app.get_messages(message.chat.id, reply_to_message_ids=message.message_id)
@@ -104,8 +103,7 @@ class TelegramDownloadHelper:
                     LOGGER.info('Checking File/Folder if already in Drive...')
                     smsg, button = GoogleDriveHelper().drive_list(name, True, True)
                     if smsg:
-                        msg = "File/Folder is already available in Drive.\nHere are the search results:"
-                        self.__onEventEnd()
+                        msg = "Someone already mirrored it for you.\nHere you go:"
                         return sendMarkup(msg, self.__listener.bot, self.__listener.message, button)
                 if STORAGE_THRESHOLD is not None:
                     arch = any([self.__listener.isZip, self.__listener.extract])
@@ -118,11 +116,11 @@ class TelegramDownloadHelper:
                 LOGGER.info(f'Downloading Telegram file with id: {media.file_unique_id}')
                 self.__download(_dmsg, path)
             else:
-                self.__onDownloadError('File already being downloaded!')
+                self.__onDownloadError('File Already Being Downloaded!')
         else:
-            self.__onDownloadError('No document in the replied message')
+            self.__onDownloadError('No Document in Replied Message')
 
     def cancel_download(self):
         LOGGER.info(f'Cancelling download on user request: {self.__id}')
         self.__is_cancelled = True
-        self.__onDownloadError('Cancelled by user!')
+        self.__onDownloadError('Cancelled by User Himself')

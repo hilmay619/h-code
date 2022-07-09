@@ -33,7 +33,7 @@ SITES = {
     "nyaasi": "NyaaSi",
     "zooqle": "Zooqle",
     "kickass": "KickAss",
-    "bitsearch": "Bitsearch",
+    "bitsearch": "BitSearch",
     "glodls": "Glodls",
     "magnetdl": "MagnetDL",
     "limetorrent": "LimeTorrent",
@@ -49,13 +49,12 @@ TELEGRAPH_LIMIT = 300
 
 def torser(update, context):
     user_id = update.message.from_user.id
-    key = update.message.text.split(" ", maxsplit=1)
     buttons = button_build.ButtonMaker()
     if SEARCH_API_LINK is  None and SEARCH_PLUGINS is None:
         sendMessage("No API link or search PLUGINS added for this function", context.bot, update.message)
-    elif len(key) == 1 and SEARCH_API_LINK is None:
-        sendMessage("Send a search key along with command", context.bot, update.message)
-    elif len(key) == 1:
+    elif len(context.args) == 0 and SEARCH_API_LINK is None:
+        sendMessage("🚫 <b>Send Me a Keyword</b> 🚫", context.bot, update.message)
+    elif len(context.args) == 0:
         buttons.sbutton('Trending', f"torser {user_id} apitrend")
         buttons.sbutton('Recent', f"torser {user_id} apirecent")
         buttons.sbutton("Cancel", f"torser {user_id} cancel")
@@ -69,32 +68,32 @@ def torser(update, context):
         sendMarkup('Choose tool to search:', context.bot, update.message, button)
     elif SEARCH_API_LINK is not None and SEARCH_PLUGINS is None:
         button = _api_buttons(user_id, "apisearch")
-        sendMarkup('Choose site to search:', context.bot, update.message, button)
+        sendMarkup('Choose Site To Search ⤵️', context.bot, update.message, button)
     elif SEARCH_API_LINK is None and SEARCH_PLUGINS is not None:
         button = _plugin_buttons(user_id)
-        sendMarkup('Choose site to search:', context.bot, update.message, button)
+        sendMarkup('Choose Site To Search ⤵️', context.bot, update.message, button)
 
 def torserbut(update, context):
     query = update.callback_query
     user_id = query.from_user.id
     message = query.message
-    key = message.reply_to_message.text.split(" ", maxsplit=1)
+    key = message.reply_to_message.text.split(maxsplit=1)
     if len(key) > 1:
-        key = key[1]
+        key = key[1].strip()
     else:
         key = None
     data = query.data
-    data = data.split(" ")
+    data = data.split()
     if user_id != int(data[1]):
-        query.answer(text="Not Yours!", show_alert=True)
+        query.answer(text="You Can't Use This, Because it's Not Your Task", show_alert=True)
     elif data[2].startswith('api'):
         query.answer()
         button = _api_buttons(user_id, data[2])
-        editMessage('Choose site:', message, button)
+        editMessage('Choose Site:', message, button)
     elif data[2] == 'plugin':
         query.answer()
         button = _plugin_buttons(user_id)
-        editMessage('Choose site:', message, button)
+        editMessage('Choose Site:', message, button)
     elif data[2] != "cancel":
         query.answer()
         site = data[2]
@@ -105,15 +104,15 @@ def torserbut(update, context):
                     endpoint = 'Trending'
                 elif method == 'apirecent':
                     endpoint = 'Recent'
-                editMessage(f"<b>Listing {endpoint} Items...\nTorrent Site:- <i>{SITES.get(site)}</i></b>", message)
+                editMessage(f"<b>Listing {endpoint} Items...\n🌐 Torrent Site : {SITES.get(site)}</b>", message)
             else:
-                editMessage(f"<b>Searching for <i>{key}</i>\nTorrent Site:- <i>{SITES.get(site)}</i></b>", message)
+                editMessage(f"<b>🔎 Searching For {key}\n🌐 Torrent Site : {SITES.get(site)}</b>", message)
         else:
-            editMessage(f"<b>Searching for <i>{key}</i>\nTorrent Site:- <i>{site.capitalize()}</i></b>", message)
+            editMessage(f"<b>🔎 Searching For {key}\n🌐 Torrent Site : {site.capitalize()}</b>", message)
         Thread(target=_search, args=(key, site, message, method)).start()
     else:
         query.answer()
-        editMessage("Search has been canceled!", message)
+        editMessage("🚫 Search Has Been Canceled 🚫", message)
 
 def _search(key, site, message, method):
     if method.startswith('api'):
@@ -139,14 +138,14 @@ def _search(key, site, message, method):
             resp = rget(api)
             search_results = resp.json()
             if "error" in search_results.keys():
-                return editMessage(f"No result found for <i>{key}</i>\nTorrent Site:- <i>{SITES.get(site)}</i>", message)
-            msg = f"<b>Found {min(search_results['total'], TELEGRAPH_LIMIT)}</b>"
+                return editMessage(f"🚫 <b>No Result Found For {key} 🚫\n🌐 Torrent Site : {SITES.get(site)}</b>", message)
+            msg = f"<b>🔎 Found {min(search_results['total'], TELEGRAPH_LIMIT)}</b>"
             if method == 'apitrend':
-                msg += f" <b>trending result(s)\nTorrent Site:- <i>{SITES.get(site)}</i></b>"
+                msg += f" <b>trending result(s)\n🌐 Torrent Site : {SITES.get(site)}</b>"
             elif method == 'apirecent':
-                msg += f" <b>recent result(s)\nTorrent Site:- <i>{SITES.get(site)}</i></b>"
+                msg += f" <b>recent result(s)\n🌐 Torrent Site : {SITES.get(site)}</b>"
             else:
-                msg += f" <b>result(s) for <i>{key}</i>\nTorrent Site:- <i>{SITES.get(site)}</i></b>"
+                msg += f" <b>Result For {key}\n🌐 Torrent Site : {SITES.get(site)}</b>"
             search_results = search_results['data']
         except Exception as e:
             return editMessage(str(e), message)
@@ -164,12 +163,12 @@ def _search(key, site, message, method):
         search_results = dict_search_results.results
         total_results = dict_search_results.total
         if total_results == 0:
-            return editMessage(f"No result found for <i>{key}</i>\nTorrent Site:- <i>{site.capitalize()}</i>", message)
-        msg = f"<b>Found {min(total_results, TELEGRAPH_LIMIT)}</b>"
-        msg += f" <b>result(s) for <i>{key}</i>\nTorrent Site:- <i>{site.capitalize()}</i></b>"
+            return editMessage(f"🚫 <b>No Result Found For {key} 🚫\n🌐 Torrent Site : {site.capitalize()}</b>", message)
+        msg = f"<b>🔎 Found {min(total_results, TELEGRAPH_LIMIT)}</b>"
+        msg += f" <b>Result For {key}\n🌐 Torrent Site : {site.capitalize()}</b>"
     link = _getResult(search_results, key, message, method)
     buttons = button_build.ButtonMaker()
-    buttons.buildbutton("🔎 VIEW", link)
+    buttons.buildbutton("🔎 Check ↗️", link)
     button = InlineKeyboardMarkup(buttons.build_menu(1))
     editMessage(msg, message, button)
     if not method.startswith('api'):
@@ -184,36 +183,36 @@ def _getResult(search_results, key, message, method):
     elif method == 'apitrend':
         msg = "<h4>API Trending Results</h4>"
     else:
-        msg = f"<h4>PLUGINS Search Result(s) For {key}</h4>"
+        msg = f"<h4>Search Result For {key}</h4>"
     for index, result in enumerate(search_results, start=1):
         if method.startswith('api'):
             if 'name' in result.keys():
                 msg += f"<code><a href='{result['url']}'>{escape(result['name'])}</a></code><br>"
             if 'torrents' in result.keys():
                 for subres in result['torrents']:
-                    msg += f"<b>Quality: </b>{subres['quality']} | <b>Type: </b>{subres['type']} | <b>Size: </b>{subres['size']}<br>"
+                    msg += f"<b>Quality: </b>{subres['quality']} | <b>Type: </b>{subres['type']} | <b>📥 Total Size : </b>{subres['size']}<br>"
                     if 'torrent' in subres.keys():
                         msg += f"<a href='{subres['torrent']}'>Direct Link</a><br>"
                     elif 'magnet' in subres.keys():
-                        msg += f"<b>Share Magnet to</b> <a href='http://t.me/share/url?url={subres['magnet']}'>Telegram</a><br>"
+                        msg += f"<b>📩 Share Magnet :</b> <a href='http://t.me/share/url?url={subres['magnet']}'>Telegram</a><br>"
                 msg += '<br>'
             else:
-                msg += f"<b>Size: </b>{result['size']}<br>"
+                msg += f"<b>📥 Total Size : </b>{result['size']}<br>"
                 try:
-                    msg += f"<b>Seeders: </b>{result['seeders']} | <b>Leechers: </b>{result['leechers']}<br>"
+                    msg += f"<b>🧲 Seeders : </b>{result['seeders']} | <b>🧲 Leechers : </b>{result['leechers']}<br>"
                 except:
                     pass
                 if 'torrent' in result.keys():
                     msg += f"<a href='{result['torrent']}'>Direct Link</a><br><br>"
                 elif 'magnet' in result.keys():
-                    msg += f"<b>Share Magnet to</b> <a href='http://t.me/share/url?url={quote(result['magnet'])}'>Telegram</a><br><br>"
+                    msg += f"<b>📩 Share Magnet :</b> <a href='http://t.me/share/url?url={quote(result['magnet'])}'>Telegram</a><br><br>"
         else:
-            msg += f"<a href='{result.descrLink}'>{escape(result.fileName)}</a><br>"
-            msg += f"<b>Size: </b>{get_readable_file_size(result.fileSize)}<br>"
-            msg += f"<b>Seeders: </b>{result.nbSeeders} | <b>Leechers: </b>{result.nbLeechers}<br>"
+            msg += f"📄 Name : <a href='{result.descrLink}'>{escape(result.fileName)}</a><br>"
+            msg += f"<b>📥 Total Size : </b>{get_readable_file_size(result.fileSize)}<br>"
+            msg += f"<b>🧲 Seeders : </b>{result.nbSeeders} | <b>🧲 Leechers : </b>{result.nbLeechers}<br>"
             link = result.fileUrl
             if link.startswith('magnet:'):
-                msg += f"<b>Share Magnet to</b> <a href='http://t.me/share/url?url={quote(link)}'>Telegram</a><br><br>"
+                msg += f"<b>📩 Share Magnet :</b> <a href='http://t.me/share/url?url={quote(link)}'>Telegram</a><br><br>"
             else:
                 msg += f"<a href='{link}'>Direct Link</a><br><br>"
 
@@ -229,7 +228,7 @@ def _getResult(search_results, key, message, method):
 
     editMessage(f"<b>Creating</b> {len(telegraph_content)} <b>Telegraph pages.</b>", message)
     path = [telegraph.create_page(
-                title='Mirror-leech-bot Torrent Search',
+                title='Telegraph Search x Google Drive',
                 content=content
             )["path"] for content in telegraph_content]
     sleep(0.5)

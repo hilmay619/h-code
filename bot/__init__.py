@@ -133,28 +133,44 @@ AUTHORIZED_CHATS = set()
 SUDO_USERS = set()
 AS_DOC_USERS = set()
 AS_MEDIA_USERS = set()
-EXTENTION_FILTER = set(['.torrent'])
+EXTENSION_FILTER = set()
+LEECH_LOG = set()
+MIRROR_LOGS = set()
 
 try:
     aid = getConfig('AUTHORIZED_CHATS')
-    aid = aid.split(' ')
+    aid = aid.split()
     for _id in aid:
-        AUTHORIZED_CHATS.add(int(_id))
+        AUTHORIZED_CHATS.add(int(_id.strip()))
 except:
     pass
 try:
     aid = getConfig('SUDO_USERS')
-    aid = aid.split(' ')
+    aid = aid.split()
     for _id in aid:
-        SUDO_USERS.add(int(_id))
+        SUDO_USERS.add(int(_id.strip()))
 except:
     pass
 try:
-    fx = getConfig('EXTENTION_FILTER')
+    fx = getConfig('EXTENSION_FILTER')
+except:
+    pass
+try:
+    aid = getConfig('LEECH_LOG')
+    aid = aid.split(' ')
+    for _id in aid:
+        LEECH_LOG.add(int(_id))
+except:
+    pass
+try:
+    aid = getConfig('MIRROR_LOGS')
+    aid = aid.split(' ')
+    for _id in aid:
+        MIRROR_LOGS.add(int(_id))
     if len(fx) > 0:
-        fx = fx.split(' ')
+        fx = fx.split()
         for x in fx:
-            EXTENTION_FILTER.add(x.lower())
+            EXTENSION_FILTER.add(x.strip().lower())
 except:
     pass
 try:
@@ -169,7 +185,7 @@ try:
     TELEGRAM_API = getConfig('TELEGRAM_API')
     TELEGRAM_HASH = getConfig('TELEGRAM_HASH')
 except:
-    LOGGER.error("One or more env variables missing! Exiting now")
+    log_error("One or more env variables missing! Exiting now")
     exit(1)
 
 LOGGER.info("Generating BOT_SESSION_STRING")
@@ -187,7 +203,7 @@ except:
 def aria2c_init():
     try:
         log_info("Initializing Aria2c")
-        link = "https://releases.ubuntu.com/21.10/ubuntu-21.10-desktop-amd64.iso.torrent"
+        link = "https://linuxmint.com/torrents/lmde-5-cinnamon-64bit.iso.torrent"
         dire = DOWNLOAD_DIR.rstrip("/")
         aria2.add_uris([link], {'dir': dire})
         sleep(3)
@@ -437,6 +453,40 @@ try:
 except:
     CRYPT = None
 try:
+    APPDRIVE_EMAIL = getConfig('APPDRIVE_EMAIL')
+    APPDRIVE_PASS = getConfig('APPDRIVE_PASS')
+    if len(APPDRIVE_EMAIL) == 0 or len(APPDRIVE_PASS) == 0:
+        raise KeyError
+except KeyError:
+    APPDRIVE_EMAIL = None
+    APPDRIVE_PASS = None
+try:
+    FSUB = getConfig('FSUB')
+    FSUB = FSUB.lower() == 'true'
+except:
+    FSUB = False
+    LOGGER.info("Force Subscribe is disabled")
+try:
+    CHANNEL_USERNAME = getConfig("CHANNEL_USERNAME")
+    if len(CHANNEL_USERNAME) == 0:
+        raise KeyError
+except KeyError:
+    log_info("CHANNEL_USERNAME not provided!")
+    CHANNEL_USERNAME = ""
+try:
+    FSUB_CHANNEL_ID = getConfig("FSUB_CHANNEL_ID")
+    if len(FSUB_CHANNEL_ID) == 0:
+        raise KeyError
+    FSUB_CHANNEL_ID = int(FSUB_CHANNEL_ID)
+except KeyError:
+    log_info("CHANNEL_ID not provided!")
+    FSUB_CHANNEL_ID = -1001347703925
+try:
+    BOT_PM = getConfig('BOT_PM')
+    BOT_PM = BOT_PM.lower() == 'true'
+except KeyError:
+    BOT_PM = False
+try:
     TOKEN_PICKLE_URL = getConfig('TOKEN_PICKLE_URL')
     if len(TOKEN_PICKLE_URL) == 0:
         raise KeyError
@@ -517,6 +567,13 @@ if ospath.exists('drive_folder'):
                 INDEX_URLS.append(temp[2])
             except:
                 INDEX_URLS.append(None)
+try:
+    IMAGE_URL = getConfig('IMAGE_URL')
+    if len(IMAGE_URL) == 0:
+        IMAGE_URL = 'https://telegra.ph/file/2326855aa5ba1d2520e47.jpg'
+except KeyError:
+    IMAGE_URL = 'https://telegra.ph/file/2326855aa5ba1d2520e47.jpg'
+
 try:
     SEARCH_PLUGINS = getConfig('SEARCH_PLUGINS')
     if len(SEARCH_PLUGINS) == 0:

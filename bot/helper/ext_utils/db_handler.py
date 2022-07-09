@@ -1,7 +1,7 @@
 from os import path as ospath, makedirs
 from psycopg2 import connect, DatabaseError
 
-from bot import DB_URI, AUTHORIZED_CHATS, SUDO_USERS, AS_DOC_USERS, AS_MEDIA_USERS, rss_dict, LOGGER, botname
+from bot import DB_URI, AUTHORIZED_CHATS, SUDO_USERS, AS_DOC_USERS, AS_MEDIA_USERS, rss_dict, LOGGER, botname, LEECH_LOG
 
 class DbManger:
     def __init__(self):
@@ -29,7 +29,8 @@ class DbManger:
                  auth boolean DEFAULT FALSE,
                  media boolean DEFAULT FALSE,
                  doc boolean DEFAULT FALSE,
-                 thumb bytea DEFAULT NULL
+                 thumb bytea DEFAULT NULL,
+                 leechlog boolean DEFAULT FALSE
               )
               """
         self.cur.execute(sql)
@@ -67,6 +68,8 @@ class DbManger:
                         makedirs('Thumbnails')
                     with open(path, 'wb+') as f:
                         f.write(row[5])
+                if row[6] and row[0] not in LEECH_LOG:
+                    LEECH_LOG.add(row[0])
             LOGGER.info("Users data has been imported from Database")
         # Rss Data
         self.cur.execute("SELECT * FROM rss")
@@ -125,7 +128,7 @@ class DbManger:
             self.cur.execute(sql)
             self.conn.commit()
             self.disconnect()
-            return '✅ <b>Successfully Removed From Sudo</b> ✅'
+            return '🚫 <b>Successfully Removed From Sudo</b> 🚫'
 
     def user_media(self, user_id: int):
         if self.err:
@@ -170,6 +173,29 @@ class DbManger:
         self.cur.execute(sql)
         self.conn.commit()
         self.disconnect()
+
+        # For Leech log
+    def addleech_log(self, chat_id: int):
+        if self.err:
+            return "Error in DB connection, check log for details"
+        elif not self.user_check(chat_id):
+            sql = 'INSERT INTO users (uid, leechlog) VALUES ({}, TRUE)'.format(chat_id)
+        else:
+            sql = 'UPDATE users SET leechlog = TRUE WHERE uid = {}'.format(chat_id)
+        self.cur.execute(sql)
+        self.conn.commit()
+        self.disconnect()
+        return '✅ <b>Successfully Add to Leech Logs</b> ✅'
+
+    def rmleech_log(self, chat_id: int):
+        if self.err:
+            return "Error in DB connection, check log for details"
+        elif self.user_check(chat_id):
+            sql = 'UPDATE users SET leechlog = FALSE WHERE uid = {}'.format(chat_id)
+            self.cur.execute(sql)
+            self.conn.commit()
+            self.disconnect()
+            return '🚫 <b>Successfully Removed From Leech Logs</b> 🚫'
 
     def user_check(self, uid: int):
         self.cur.execute("SELECT * FROM users WHERE uid = {}".format(uid))
@@ -246,4 +272,3 @@ class DbManger:
 
 if DB_URI is not None:
     DbManger().db_init()
-

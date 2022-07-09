@@ -3,7 +3,6 @@ from telegram.ext import CommandHandler, CallbackQueryHandler
 from telegram import InlineKeyboardMarkup
 from time import sleep
 from re import split as re_split
-
 from bot import DOWNLOAD_DIR, dispatcher
 from bot.helper.telegram_helper.message_utils import sendMessage, sendMarkup, editMessage
 from bot.helper.telegram_helper import button_build
@@ -20,34 +19,40 @@ def _watch(bot, message, isZip=False, isLeech=False, multi=0):
     user_id = message.from_user.id
     msg_id = message.message_id
 
-    try:
-        link = mssg.split(' ')[1].strip()
-        if link.isdigit():
+    link = mssg.split()
+    if len(link) > 1:
+        link = link[1].strip()
+        if link.strip().isdigit():
             multi = int(link)
-            raise IndexError
-        elif link.startswith(("|", "pswd:", "args:")):
-            raise IndexError
-    except:
+            link = ''
+        elif link.strip().startswith(("|", "pswd:", "args:")):
+            link = ''
+    else:
         link = ''
-    try:
-        name_arg = mssg.split('|', maxsplit=1)
-        if 'args: ' in name_arg[0]:
-            raise IndexError
+
+    name = mssg.split('|', maxsplit=1)
+    if len(name) > 1:
+        if 'args: ' in name[0] or 'pswd: ' in name[0]:
+            name = ''
         else:
-            name = name_arg[1]
-        name = re_split(r' pswd: | args: ', name)[0]
-        name = name.strip()
-    except:
+            name = name[1]
+        if name != '':
+            name = re_split('pswd:|args:', name)[0]
+            name = name.strip()
+    else:
         name = ''
-    try:
-        pswd = mssg.split(' pswd: ')[1]
+
+    pswd = mssg.split(' pswd: ')
+    if len(pswd) > 1:
+        pswd = pswd[1]
         pswd = pswd.split(' args: ')[0]
-    except:
+    else:
         pswd = None
 
-    try:
-        args = mssg.split(' args: ')[1]
-    except:
+    args = mssg.split(' args: ')
+    if len(args) > 1:
+        args = args[1]
+    else:
         args = None
 
     if message.from_user.username:
@@ -58,22 +63,19 @@ def _watch(bot, message, isZip=False, isLeech=False, multi=0):
     reply_to = message.reply_to_message
     if reply_to is not None:
         if len(link) == 0:
-            link = reply_to.text.strip()
+            link = reply_to.text.split(maxsplit=1)[0].strip()
         if reply_to.from_user.username:
             tag = f"@{reply_to.from_user.username}"
         else:
             tag = reply_to.from_user.mention_html(reply_to.from_user.first_name)
 
     if not is_url(link):
-        help_msg = "<b>Send link along with command line:</b>"
-        help_msg += "\n<code>/command</code> {link} |newname pswd: mypassword [zip] args: x:y|x1:y1"
-        help_msg += "\n\n<b>By replying to link:</b>"
-        help_msg += "\n<code>/command</code> |newname pswd: mypassword [zip] args: x:y|x1:y1"
-        help_msg += "\n\n<b>Args Example:</b> args: playliststart:^10|match_filter:season_number=18|matchtitle:S1"
-        help_msg += "\n\n<b>NOTE:</b> Add `^` before integer, some values must be integer and some string."
-        help_msg += " Like playlist_items:10 works with string so no need to add `^` before the number"
-        help_msg += " but playlistend works only with integer so you must add `^` before the number like example above."
-        help_msg += "\n\nCheck all arguments from this <a href='https://github.com/yt-dlp/yt-dlp/blob/a3125791c7a5cdf2c8c025b99788bf686edd1a8a/yt_dlp/YoutubeDL.py#L194'>FILE</a>."
+        help_msg = "<b>🚫 No Download Source Provided 🚫\n______________________________</b>"
+        help_msg += "\n\n🚩<b>How to Mirror With YTDL / YouTube ?</b>"
+        help_msg += "\n<code>/command</code> {link}"
+        help_msg += "\n<b>Example :</b>"
+        help_msg += "\n<code>/watch1 https://youtu.be/TiQ7aug-GwI</code>"
+        help_msg += "\n<b>Note : Choose Your Quality/Type of Files</b>"
         return sendMessage(help_msg, bot, message)
 
     listener = MirrorListener(bot, message, isZip, isLeech=isLeech, pswd=pswd, tag=tag)
@@ -93,9 +95,9 @@ def _watch(bot, message, isZip=False, isLeech=False, multi=0):
             video_format = f"bv*[height<={i}][ext=webm]"
             buttons.sbutton(f"{i}-webm", f"qu {msg_id} {video_format} t")
         buttons.sbutton("Audios", f"qu {msg_id} audio t")
-        buttons.sbutton("Best Videos", f"qu {msg_id} {best_video} t")
-        buttons.sbutton("Best Audios", f"qu {msg_id} {best_audio} t")
-        buttons.sbutton("Cancel", f"qu {msg_id} cancel")
+        buttons.sbutton("👍 Best Videos", f"qu {msg_id} {best_video} t")
+        buttons.sbutton("👍 Best Audios", f"qu {msg_id} {best_audio} t")
+        buttons.sbutton("🚫 Cancel 🚫", f"qu {msg_id} cancel")
         YTBUTTONS = InlineKeyboardMarkup(buttons.build_menu(3))
         listener_dict[msg_id] = [listener, user_id, link, name, YTBUTTONS, args]
         bmsg = sendMarkup('Choose Playlist Videos Quality:', bot, message, YTBUTTONS)
@@ -142,9 +144,9 @@ def _watch(bot, message, isZip=False, isLeech=False, multi=0):
                 else:
                     buttons.sbutton(str(_format), f"qu {msg_id} dict {_format}")
         buttons.sbutton("Audios", f"qu {msg_id} audio")
-        buttons.sbutton("Best Video", f"qu {msg_id} {best_video}")
-        buttons.sbutton("Best Audio", f"qu {msg_id} {best_audio}")
-        buttons.sbutton("Cancel", f"qu {msg_id} cancel")
+        buttons.sbutton("👍 Best Video", f"qu {msg_id} {best_video}")
+        buttons.sbutton("👍 Best Audio", f"qu {msg_id} {best_audio}")
+        buttons.sbutton("🚫 Cancel 🚫", f"qu {msg_id} cancel")
         YTBUTTONS = InlineKeyboardMarkup(buttons.build_menu(2))
         listener_dict[msg_id] = [listener, user_id, link, name, YTBUTTONS, args, formats_dict]
         bmsg = sendMarkup('Choose Video Quality:', bot, message, YTBUTTONS)
@@ -215,10 +217,10 @@ def select_format(update, context):
     try:
         task_info = listener_dict[task_id]
     except:
-        return editMessage("This is an old task", msg)
+        return editMessage("🚫 This Is Old Task 🚫", msg)
     uid = task_info[1]
     if user_id != uid and not CustomFilters._owner_query(user_id):
-        return query.answer(text="This task is not for you!", show_alert=True)
+        return query.answer(text="🚫 You Can't Use This, Because it's Not Your Task 🚫", show_alert=True)
     elif data[2] == "dict":
         query.answer()
         qual = data[3]
@@ -226,7 +228,7 @@ def select_format(update, context):
         return
     elif data[2] == "back":
         query.answer()
-        return editMessage('Choose Video Quality:', msg, task_info[4])
+        return editMessage('🚩 Choose Video Quality ⤵️', msg, task_info[4])
     elif data[2] == "audio":
         query.answer()
         if len(data) == 4:
@@ -237,7 +239,7 @@ def select_format(update, context):
         return
     elif data[2] == "cancel":
         query.answer()
-        editMessage('Task has been cancelled.', msg)
+        editMessage('🚫 Task Has Been Cancelled 🚫', msg)
     else:
         query.answer()
         listener = task_info[0]
@@ -261,7 +263,7 @@ def _auto_cancel(msg, msg_id):
     sleep(120)
     try:
         del listener_dict[msg_id]
-        editMessage('Timed out! Task has been cancelled.', msg)
+        editMessage('🚫 Timed Out. Task Has Been Cancelled 🚫', msg)
     except:
         pass
 

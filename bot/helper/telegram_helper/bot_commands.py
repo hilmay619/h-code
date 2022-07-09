@@ -1,6 +1,5 @@
 from bot import CMD_INDEX
 
-
 class _BotCommands:
     def __init__(self):
         self.StartCommand = f'start'
@@ -9,19 +8,19 @@ class _BotCommands:
         self.ZipMirrorCommand = f'zipmirror{CMD_INDEX}'
         self.CancelMirror = f'cancel{CMD_INDEX}'
         self.CancelAllCommand = f'cancelall{CMD_INDEX}'
-        self.ListCommand = f'list{CMD_INDEX}'
-        self.SearchCommand = f'search{CMD_INDEX}'
+        self.ListCommand = f'find{CMD_INDEX}'
+        self.SearchCommand = f'torrent{CMD_INDEX}'
         self.StatusCommand = f'status{CMD_INDEX}'
-        self.AuthorizedUsersCommand = f'users{CMD_INDEX}'
-        self.AuthorizeCommand = f'authorize{CMD_INDEX}'
-        self.UnAuthorizeCommand = f'unauthorize{CMD_INDEX}'
-        self.AddSudoCommand = f'addsudo{CMD_INDEX}'
-        self.RmSudoCommand = f'rmsudo{CMD_INDEX}'
+        self.AuthorizedUsersCommand = f'allow'
+        self.AuthorizeCommand = f'auth'
+        self.UnAuthorizeCommand = f'unauth'
+        self.AddSudoCommand = f'addsudo'
+        self.RmSudoCommand = f'unsudo'
         self.PingCommand = f'ping'
         self.RestartCommand = f'restart'
-        self.StatsCommand = f'stats{CMD_INDEX}'
+        self.StatsCommand = f'usage'
         self.HelpCommand = f'help'
-        self.LogCommand = f'log{CMD_INDEX}'
+        self.LogCommand = f'log'
         self.CloneCommand = f'clone{CMD_INDEX}'
         self.CountCommand = f'count{CMD_INDEX}'
         self.WatchCommand = f'watch{CMD_INDEX}'

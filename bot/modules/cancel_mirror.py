@@ -1,20 +1,17 @@
 from telegram import InlineKeyboardMarkup
 from telegram.ext import CommandHandler, CallbackQueryHandler
 from time import sleep
-
-from bot import download_dict, dispatcher, download_dict_lock, QB_SEED, SUDO_USERS, OWNER_ID
+from bot import download_dict, dispatcher, download_dict_lock, SUDO_USERS, OWNER_ID
 from bot.helper.telegram_helper.bot_commands import BotCommands
 from bot.helper.telegram_helper.filters import CustomFilters
 from bot.helper.telegram_helper.message_utils import sendMessage, sendMarkup
 from bot.helper.ext_utils.bot_utils import getDownloadByGid, MirrorStatus, getAllDownload
 from bot.helper.telegram_helper import button_build
 
-
 def cancel_mirror(update, context):
-    args = update.message.text.split(" ", maxsplit=1)
     user_id = update.message.from_user.id
-    if len(args) > 1:
-        gid = args[1]
+    if len(context.args) == 1:
+        gid = context.args[0]
         dl = getDownloadByGid(gid)
         if not dl:
             return sendMessage(f"🚫 <b>GID :</b> <code>{gid}</code> <b>Not Found</b> 🚫", context.bot, update.message)
@@ -27,20 +24,20 @@ def cancel_mirror(update, context):
             else:
                 dl = None
         if not dl:
-            return sendMessage("🚫 <b>Reply</b> <code>/{BotCommands.CancelMirror}</code> <b>GID Code to Cancel Mirror</b> 🚫", context.bot, update.message)
-    elif len(args) == 1:
+            return sendMessage("🚫 <b>This is Not an Active Task</b> 🚫", context.bot, update.message)
+    elif len(context.args) == 0:
         msg = f"🚫 <b>Reply</b> <code>/{BotCommands.CancelMirror}</code> <b>GID Code to Cancel Mirror</b> 🚫"
         return sendMessage(msg, context.bot, update.message)
 
-    if OWNER_ID != user_id and dl.message.from_user.id != user_id and user_id not in SUDO_USERS and user_id != 314489490:
-        return sendMessage("🚫 <b>You Can't Stop This, Because it's Not Yours</b> 🚫", context.bot, update.message)
+    if OWNER_ID != user_id and dl.message.from_user.id != user_id and user_id not in SUDO_USERS:
+        return sendMessage("🚫 <b>You Can't Stop This, Because it's Not Your Task</b> 🚫", context.bot, update.message)
 
     if dl.status() == MirrorStatus.STATUS_ARCHIVING:
-        sendMessage("🚫 Archival in Progress, You Can't Cancel It. 🚫", context.bot, update.message)
+        sendMessage("Archival in Progress, You Can't Cancel It.", context.bot, update.message)
     elif dl.status() == MirrorStatus.STATUS_EXTRACTING:
-        sendMessage("🚫 Extract in Progress, You Can't Cancel It. 🚫", context.bot, update.message)
+        sendMessage("Extract in Progress, You Can't Cancel It.", context.bot, update.message)
     elif dl.status() == MirrorStatus.STATUS_SPLITTING:
-        sendMessage("🚫 Split in Progress, You Can't Cancel It. 🚫", context.bot, update.message)
+        sendMessage("Split in Progress, You Can't Cancel It.", context.bot, update.message)
     else:
         dl.download().cancel_download()
 
@@ -60,8 +57,7 @@ def cancell_all_buttons(update, context):
     buttons = button_build.ButtonMaker()
     buttons.sbutton("📥 Downloading 📥", "canall down")
     buttons.sbutton("📤 Uploading 📤", "canall up")
-    if QB_SEED:
-        buttons.sbutton("☁️ Seeding ☁️", "canall seed")
+    buttons.sbutton("☁️ Seeding ☁️", "canall seed")
     buttons.sbutton("♻️ Cloning ♻️", "canall clone")
     buttons.sbutton("⛔️ All ⛔️", "canall all")
     button = InlineKeyboardMarkup(buttons.build_menu(2))
@@ -71,13 +67,13 @@ def cancel_all_update(update, context):
     query = update.callback_query
     user_id = query.from_user.id
     data = query.data
-    data = data.split(" ")
+    data = data.split()
     if CustomFilters._owner_query(user_id):
         query.answer()
         query.message.delete()
         cancel_all(data[1])
     else:
-        query.answer(text="😡 You Don't Have Permission, Because You're Not Authorized User & Sudo 😡", show_alert=True)
+        query.answer(text="🚫 You Can't Stop This, Because it's Not Your Task 🚫", show_alert=True)
 
 
 

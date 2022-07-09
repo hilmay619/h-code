@@ -1,13 +1,10 @@
 from time import sleep
-from threading import Thread
-
 from bot import aria2, download_dict_lock, download_dict, STOP_DUPLICATE, TORRENT_DIRECT_LIMIT, ZIP_UNZIP_LIMIT, LOGGER, STORAGE_THRESHOLD
 from bot.helper.mirror_utils.upload_utils.gdriveTools import GoogleDriveHelper
 from bot.helper.ext_utils.bot_utils import is_magnet, getDownloadByGid, new_thread, get_readable_file_size
 from bot.helper.mirror_utils.status_utils.aria_download_status import AriaDownloadStatus
 from bot.helper.telegram_helper.message_utils import sendMarkup, sendStatusMessage, sendMessage
 from bot.helper.ext_utils.fs_utils import get_base_name, check_storage_threshold
-
 
 @new_thread
 def __onDownloadStarted(api, gid):
@@ -22,9 +19,9 @@ def __onDownloadStarted(api, gid):
                 download = api.get_download(gid)
             LOGGER.info(f'onDownloadStarted: {gid}')
             dl = getDownloadByGid(gid)
-            if not dl:
+            if not dl or dl.getListener().isLeech:
                 return
-            if STOP_DUPLICATE and not dl.getListener().isLeech:
+            if STOP_DUPLICATE:
                 LOGGER.info('Checking File/Folder if already in Drive...')
                 sname = download.name
                 if dl.getListener().isZip:
@@ -37,9 +34,9 @@ def __onDownloadStarted(api, gid):
                 if sname is not None:
                     smsg, button = GoogleDriveHelper().drive_list(sname, True)
                     if smsg:
-                        dl.getListener().onDownloadError('File/Folder already available in Drive.\n\n')
+                        dl.getListener().onDownloadError('Already Mirrored!\n\n')
                         api.remove([download], force=True, files=True)
-                        return sendMarkup("Here are the search results:", dl.getListener().bot, dl.getListener().message, button)
+                        return sendMarkup("Here you go:", dl.getListener().bot, dl.getListener().message, button)
             if any([ZIP_UNZIP_LIMIT, TORRENT_DIRECT_LIMIT, STORAGE_THRESHOLD]):
                 sleep(1)
                 limit = None
@@ -83,7 +80,7 @@ def __onDownloadStopped(api, gid):
     sleep(6)
     dl = getDownloadByGid(gid)
     if dl:
-        dl.getListener().onDownloadError('Dead torrent!')
+        dl.getListener().onDownloadError('Dead Torrent')
 
 @new_thread
 def __onDownloadError(api, gid):
@@ -117,7 +114,7 @@ def add_aria2c_download(link: str, path, listener, filename, auth):
         return sendMessage(error, listener.bot, listener.message)
     with download_dict_lock:
         download_dict[listener.uid] = AriaDownloadStatus(download.gid, listener)
-        LOGGER.info(f"Started: {download.gid} DIR: {download.dir} ")
+        LOGGER.info(f"Download Started with area2: {download.gid} DIR: {download.dir} ")
     listener.onDownloadStart()
     sendStatusMessage(listener.message, listener.bot)
 

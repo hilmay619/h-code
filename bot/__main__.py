@@ -7,7 +7,7 @@ from sys import executable
 from telegram import InlineKeyboardMarkup
 from telegram.ext import CommandHandler
 
-from bot import bot, dispatcher, updater, botStartTime, IGNORE_PENDING_REQUESTS, LOGGER, Interval, INCOMPLETE_TASK_NOTIFIER, DB_URI, alive, app, main_loop
+from bot import bot, dispatcher, updater, IMAGE_URL, botStartTime, IGNORE_PENDING_REQUESTS, LOGGER, Interval, INCOMPLETE_TASK_NOTIFIER, DB_URI, alive, app, main_loop
 from .helper.ext_utils.fs_utils import start_cleanup, clean_all, exit_clean_up
 from .helper.ext_utils.telegraph_helper import telegraph
 from .helper.ext_utils.bot_utils import get_readable_file_size, get_readable_time
@@ -22,7 +22,7 @@ from .modules import authorize, list, cancel_mirror, mirror_status, mirror, clon
 
 def stats(update, context):
     if ospath.exists('.git'):
-        last_commit = check_output(["git log -1 --date=rfc --pretty=format:'%cd'"], shell=True).decode()
+        last_commit = check_output(["git log -1 --date=short --pretty=format:'%cd \n<b>From</b> %cr'"], shell=True).decode()
     else:
         last_commit = 'No UPSTREAM_REPO'
     currentTime = get_readable_time(time() - botStartTime)
@@ -45,9 +45,8 @@ def stats(update, context):
     mem_a = get_readable_file_size(memory.available)
     mem_u = get_readable_file_size(memory.used)
     stats = f'<b>📊 Time Calculation 📊</b>\n\n'\
-			f'<b>📅 Date : {last_commit}</b>\n'\
             f'<b>⏰ Uptime : {currentTime}</b>\n'\
-            f'<b>🖥 System Uptime : {osUptime}</b>\n\n'\
+            f'<b>🖥 OS Uptime : {osUptime}</b>\n\n'\
 			f'<b>📊 Data Usage 📊</b>\n\n'\
             f'<b>💨 Storage : {total}</b>\n'\
             f'<b>📈 Used : {used}</b>\n<b>📉 Free : {free}</b>\n'\
@@ -62,19 +61,20 @@ def stats(update, context):
             f'<b>💽 Memory Total : {mem_t}</b>\n'\
             f'<b>📉 Memory Free : {mem_a}</b>\n'\
             f'<b>📈 Memory Used : {mem_u}</b>\n'
-    sendMessage(stats, context.bot, update.message)
-
+    update.effective_message.reply_photo(IMAGE_URL, stats, parse_mode='HTMl')
 
 def start(update, context):
     buttons = ButtonMaker()
-    buttons.buildbutton("😎 My Master 😎", "https://t.me/hilmay619")
+
+    buttons.buildbutton("😎 My Creator 😎", "https://t.me/hilmay619")
+
     reply_markup = InlineKeyboardMarkup(buttons.build_menu(2))
     if CustomFilters.authorized_user(update) or CustomFilters.authorized_chat(update):
         start_string = f'''
-This bot can mirror all your links to Google Drive!
-Type /{BotCommands.HelpCommand} to get a list of available commands
+Welcome | I'm Ready Help You 😊
+Type /{BotCommands.HelpCommand} To View Available Commands
 '''
-        sendMarkup(start_string, context.bot, update.message, reply_markup)
+        update.effective_message.reply_photo(IMAGE_URL, start_string, parse_mode = 'Markdown', reply_markup=reply_markup)
     else:
         sendMarkup('<b>🚫 Oops! You Are Not Authorized User 🚫</b>', context.bot, update.message, reply_markup)
 
@@ -82,11 +82,12 @@ def restart(update, context):
     restart_message = sendMessage("<b>🔄 Restarting, Please Wait! 🔄</b>", context.bot, update.message)
     if Interval:
         Interval[0].cancel()
+        Interval.clear()
     alive.kill()
     clean_all()
     srun(["pkill", "-9", "-f", "gunicorn|extra-api|last-api|megasdkrest|new-api"])
     srun(["python3", "update.py"])
-    with open(".restartmsg", "w") as f: 
+    with open(".restartmsg", "w") as f:
         f.truncate(0)
         f.write(f"{restart_message.chat.id}\n{restart_message.message_id}\n")
     osexecl(executable, executable, "-m", "bot")
@@ -96,7 +97,7 @@ def ping(update, context):
     start_time = int(round(time() * 1000))
     reply = sendMessage("Starting Ping", context.bot, update.message)
     end_time = int(round(time() * 1000))
-    editMessage(f'<b>🖥 Server {end_time - start_time} MilliSecond 🖥</b>', reply)
+    editMessage(f'{end_time - start_time} ms', reply)
 
 
 def log(update, context):
@@ -104,99 +105,102 @@ def log(update, context):
 
 
 help_string_telegraph = f'''<br>
-<b>/{BotCommands.HelpCommand}</b>: To get this message
+<b>/{BotCommands.HelpCommand}</b>: Show Available Commands
 <br><br>
-<b>/{BotCommands.MirrorCommand}</b> [download_url][magnet_link]: Start mirroring to Google Drive. Send <b>/{BotCommands.MirrorCommand}</b> for more help
+<b>/{BotCommands.MirrorCommand}</b> : Start Mirroring
 <br><br>
-<b>/{BotCommands.ZipMirrorCommand}</b> [download_url][magnet_link]: Start mirroring and upload the file/folder compressed with zip extension
+<b>/{BotCommands.ZipMirrorCommand}</b> : Start Mirroring and Upload as .Zip
 <br><br>
-<b>/{BotCommands.UnzipMirrorCommand}</b> [download_url][magnet_link]: Start mirroring and upload the file/folder extracted from any archive extension
+<b>/{BotCommands.UnzipMirrorCommand}</b> : Start Mirroring and Upload as Archive or Extracted Folder/File
 <br><br>
-<b>/{BotCommands.QbMirrorCommand}</b> [magnet_link][torrent_file][torrent_file_url]: Start Mirroring using qBittorrent, Use <b>/{BotCommands.QbMirrorCommand} s</b> to select files before downloading
+<b>/{BotCommands.QbMirrorCommand}</b> : Start Mirroring Using qBittorrent
 <br><br>
-<b>/{BotCommands.QbZipMirrorCommand}</b> [magnet_link][torrent_file][torrent_file_url]: Start mirroring using qBittorrent and upload the file/folder compressed with zip extension
+<b>/{BotCommands.QbZipMirrorCommand}</b> : Start Mirroring Using qBittorrent and Upload as .Zip
 <br><br>
-<b>/{BotCommands.QbUnzipMirrorCommand}</b> [magnet_link][torrent_file][torrent_file_url]: Start mirroring using qBittorrent and upload the file/folder extracted from any archive extension
+<b>/{BotCommands.QbUnzipMirrorCommand}</b> : Start Mirroring Using qBittorrent and Upload as Archive or Extracted Folder/File
 <br><br>
-<b>/{BotCommands.LeechCommand}</b> [download_url][magnet_link]: Start leeching to Telegram, Use <b>/{BotCommands.LeechCommand} s</b> to select files before leeching
+<b>/{BotCommands.LeechCommand}</b> : Start Upload/Leech File to Telegram
 <br><br>
-<b>/{BotCommands.ZipLeechCommand}</b> [download_url][magnet_link]: Start leeching to Telegram and upload the file/folder compressed with zip extension
+<b>/{BotCommands.ZipLeechCommand}</b> : Start Upload/Leech File to Telegram and Upload as .Zip
 <br><br>
-<b>/{BotCommands.UnzipLeechCommand}</b> [download_url][magnet_link][torent_file]: Start leeching to Telegram and upload the file/folder extracted from any archive extension
+<b>/{BotCommands.UnzipLeechCommand}</b> : Start Upload/Leech File to Telegram and Upload as Archive or Extracted Folder/File
 <br><br>
-<b>/{BotCommands.QbLeechCommand}</b> [magnet_link][torrent_file][torrent_file_url]: Start leeching to Telegram using qBittorrent, Use <b>/{BotCommands.QbLeechCommand} s</b> to select files before leeching
+<b>/{BotCommands.QbLeechCommand}</b> : Start Upload/Leech to Telegram Using qBittorrent
 <br><br>
-<b>/{BotCommands.QbZipLeechCommand}</b> [magnet_link][torrent_file][torrent_file_url]: Start leeching to Telegram using qBittorrent and upload the file/folder compressed with zip extension
+<b>/{BotCommands.QbZipLeechCommand}</b> : Start Upload/Leech to Telegram Using qBittorrent and Upload as .Zip
 <br><br>
-<b>/{BotCommands.QbUnzipLeechCommand}</b> [magnet_link][torrent_file][torrent_file_url]: Start leeching to Telegram using qBittorrent and upload the file/folder extracted from any archive extension
+<b>/{BotCommands.QbUnzipLeechCommand}</b> : Start Upload/Leech to Telegram Using qBittorrent and Upload as Archive or Extracted Folder/File
 <br><br>
-<b>/{BotCommands.CloneCommand}</b> [drive_url][gdtot_url]: Copy file/folder to Google Drive
+<b>/{BotCommands.CloneCommand}</b> : Copy File/Folder to Google Drive
 <br><br>
-<b>/{BotCommands.CountCommand}</b> [drive_url][gdtot_url]: Count file/folder of Google Drive
+<b>/{BotCommands.CountCommand}</b> : Count File/Folder of Google Drive
 <br><br>
-<b>/{BotCommands.DeleteCommand}</b> [drive_url]: Delete file/folder from Google Drive (Only Owner & Sudo)
+<b>/{BotCommands.DeleteCommand}</b> : Delete File/Folder From Google Drive
 <br><br>
-<b>/{BotCommands.WatchCommand}</b> [yt-dlp supported link]: Mirror yt-dlp supported link. Send <b>/{BotCommands.WatchCommand}</b> for more help
+<b>/{BotCommands.WatchCommand}</b> : Mirror YTDL Supported Link.
 <br><br>
-<b>/{BotCommands.ZipWatchCommand}</b> [yt-dlp supported link]: Mirror yt-dlp supported link as zip
+<b>/{BotCommands.ZipWatchCommand}</b> : Mirror YTDL Supported Link and Upload as .Zip
 <br><br>
-<b>/{BotCommands.LeechWatchCommand}</b> [yt-dlp supported link]: Leech yt-dlp supported link
+<b>/{BotCommands.LeechWatchCommand}</b> : Upload/Leech YTDL Supported Link to Telegram
 <br><br>
-<b>/{BotCommands.LeechZipWatchCommand}</b> [yt-dlp supported link]: Leech yt-dlp supported link as zip
+<b>/{BotCommands.LeechZipWatchCommand}</b> : Upload/Leech YTDL Supported Link to Telegram and Upload as .Zip
 <br><br>
-<b>/{BotCommands.LeechSetCommand}</b>: Leech settings
+<b>/{BotCommands.CancelMirror}</b>: Reply to the Message or Using /{BotCommands.CancelMirror} GID
 <br><br>
-<b>/{BotCommands.SetThumbCommand}</b>: Reply photo to set it as Thumbnail
+<b>/{BotCommands.CancelAllCommand}</b>: Force Cancel All Downloading
 <br><br>
-<b>/{BotCommands.RssListCommand}</b>: List all subscribed rss feed info
+<b>/{BotCommands.ListCommand}</b> : Search File/Folder in Google Drive
 <br><br>
-<b>/{BotCommands.RssGetCommand}</b>: [Title] [Number](last N links): Force fetch last N links
+<b>/{BotCommands.SearchCommand}</b> : Search for torrents with API
 <br><br>
-<b>/{BotCommands.RssSubCommand}</b>: [Title] [Rss Link] f: [filter]: Subscribe new rss feed
+<b>/{BotCommands.StatusCommand}</b> : Shows a Status of All The Downloads
 <br><br>
-<b>/{BotCommands.RssUnSubCommand}</b>: [Title]: Unubscribe rss feed by title
+<b>/{BotCommands.StatsCommand}</b> : Show Stats of the System
 <br><br>
-<b>/{BotCommands.RssSettingsCommand}</b>: Rss Settings
+<b>/{BotCommands.LeechSetCommand}</b>: Leech Settings
 <br><br>
-<b>/{BotCommands.CancelMirror}</b>: Reply to the message by which the download was initiated and that download will be cancelled
+<b>/{BotCommands.SetThumbCommand}</b>: Reply Photo to Set Thumbnail
 <br><br>
-<b>/{BotCommands.CancelAllCommand}</b>: Cancel all downloading tasks
+<b>/{BotCommands.RssListCommand}</b> : List All Subscribed RSS Feed
 <br><br>
-<b>/{BotCommands.ListCommand}</b> [query]: Search in Google Drive(s)
+<b>/{BotCommands.RssGetCommand}</b> : Force Fetch Last N Links
 <br><br>
-<b>/{BotCommands.SearchCommand}</b> [query]: Search for torrents with API
-<br>sites: <code>rarbg, 1337x, yts, etzv, tgx, torlock, piratebay, nyaasi, ettv</code><br><br>
-<b>/{BotCommands.StatusCommand}</b>: Shows a status of all the downloads
+<b>/{BotCommands.RssSubCommand}</b> : Subscribe New RSS Feed
 <br><br>
-<b>/{BotCommands.StatsCommand}</b>: Show Stats of the machine the bot is hosted on
+<b>/{BotCommands.RssUnSubCommand}</b> : Unubscribe RSS Feed by Title
+<br><br>
+<b>/{BotCommands.RssSettingsCommand}</b>: RSS Settings
 '''
 
 help = telegraph.create_page(
-        title='Mirror-Leech-Telegram-Bot',
+        title='Telegraph Search x Google Drive',
         content=help_string_telegraph,
     )["path"]
 
 help_string = f'''
-/{BotCommands.PingCommand}: Check how long it takes to Ping the Bot
 
-/{BotCommands.AuthorizeCommand}: Authorize a chat or a user to use the bot (Can only be invoked by Owner & Sudo of the bot)
+Only For Admin & Sudo User
 
-/{BotCommands.UnAuthorizeCommand}: Unauthorize a chat or a user to use the bot (Can only be invoked by Owner & Sudo of the bot)
+/{BotCommands.PingCommand} : Check Active
 
-/{BotCommands.AuthorizedUsersCommand}: Show authorized users (Only Owner & Sudo)
+/{BotCommands.AuthorizeCommand} : Authorize A Chat or User to Use The Bot
 
-/{BotCommands.AddSudoCommand}: Add sudo user (Only Owner)
+/{BotCommands.UnAuthorizeCommand} : Unauthorize A Chat or User to Use The Bot
 
-/{BotCommands.RmSudoCommand}: Remove sudo users (Only Owner)
+/{BotCommands.AuthorizedUsersCommand} : Show Authorized Chat or Users
 
-/{BotCommands.RestartCommand}: Restart and update the bot
+/{BotCommands.AddSudoCommand} : Add Sudo Permission
 
-/{BotCommands.LogCommand}: Get a log file of the bot. Handy for getting crash reports
+/{BotCommands.RmSudoCommand} : Remove Sudo Permission
+
+/{BotCommands.RestartCommand} : Restart System
+
+/{BotCommands.LogCommand} : Get .Log For Getting Crash Reports
 '''
 
 def bot_help(update, context):
     button = ButtonMaker()
-    button.buildbutton("Other Commands", f"https://telegra.ph/{help}")
+    button.buildbutton("🪧 Users Commands 🪧", f"https://telegra.ph/{help}")
     reply_markup = InlineKeyboardMarkup(button.build_menu(1))
     sendMarkup(help_string, context.bot, update.message, reply_markup)
 
@@ -209,7 +213,7 @@ def main():
                 if ospath.isfile(".restartmsg"):
                     with open(".restartmsg") as f:
                         chat_id, msg_id = map(int, f)
-                    msg = 'Restarted Successfully!'
+                    msg = 'Restarted successfully!'
                 else:
                     msg = 'Bot Restarted!'
                 for tag, links in data.items():
@@ -217,17 +221,23 @@ def main():
                      for index, link in enumerate(links, start=1):
                          msg += f" <a href='{link}'>{index}</a> |"
                          if len(msg.encode()) > 4000:
-                             if 'Restarted Successfully!' in msg and cid == chat_id:
+                             if 'Restarted successfully!' in msg and cid == chat_id:
                                  bot.editMessageText(msg, chat_id, msg_id, parse_mode='HTMl', disable_web_page_preview=True)
                                  osremove(".restartmsg")
                              else:
-                                 bot.sendMessage(cid, msg, 'HTML')
+                                 try:
+                                     bot.sendMessage(cid, msg, 'HTML')
+                                 except Exception as e:
+                                     LOGGER.error(e)
                              msg = ''
-                if 'Restarted Successfully!' in msg and cid == chat_id:
+                if 'Restarted successfully!' in msg and cid == chat_id:
                      bot.editMessageText(msg, chat_id, msg_id, parse_mode='HTMl', disable_web_page_preview=True)
                      osremove(".restartmsg")
                 else:
-                    bot.sendMessage(cid, msg, 'HTML')
+                    try:
+                        bot.sendMessage(cid, msg, 'HTML')
+                    except Exception as e:
+                        LOGGER.error(e)
 
     if ospath.isfile(".restartmsg"):
         with open(".restartmsg") as f:
@@ -255,7 +265,7 @@ def main():
     LOGGER.info("Bot Started!")
     signal(SIGINT, exit_clean_up)
 
-main()
 app.start()
+main()
 
 main_loop.run_forever()
